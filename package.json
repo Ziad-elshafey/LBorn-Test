@@ -1,0 +1,15 @@
+{
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "init-db": "node scripts/initDb.js",
+    "seed": "node scripts/seed.js",
+    "setup": "npm run init-db && npm run seed"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.0.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  }
+}
