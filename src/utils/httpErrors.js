@@ -39,7 +39,11 @@ function getClientMessage(err, statusCode) {
     return "Email already in use";
   }
 
-  if (message.includes("UNIQUE constraint failed: playlists.user_id, playlists.name")) {
+  if (
+    message.includes(
+      "UNIQUE constraint failed: playlists.user_id, playlists.name",
+    )
+  ) {
     return "Playlist name already exists for this user";
   }
 
@@ -47,6 +51,10 @@ function getClientMessage(err, statusCode) {
 }
 
 export function sendErrorResponse(res, err) {
+  if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+    err = httpError(400, "Invalid JSON");
+  }
+
   const statusCode = getStatusCode(err);
   const message = getClientMessage(err, statusCode);
 
