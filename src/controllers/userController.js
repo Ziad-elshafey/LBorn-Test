@@ -33,7 +33,7 @@ export function getUserPlaylists(req, res) {
     const playlists = userService.getUserPlaylists(req.params.userId);
     res
       .status(200)
-      .json({ message: "Users playlists fetched successfully", playlists });
+      .json({ message: "User playlists fetched successfully", playlists });
   } catch (err) {
     sendErrorResponse(res, err);
   }

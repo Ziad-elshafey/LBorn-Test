@@ -24,9 +24,20 @@ export function getUserById(id) {
 }
 
 export function getUserPlaylists(id) {
-  const playlistNames = db
+  const playlists = db
     .prepare(`SELECT id, name, description FROM playlists WHERE user_id = ?`)
     .all(id);
 
-  return playlistNames;
+  const getSongs = db.prepare(`
+    SELECT s.id, s.title, s.artist
+    FROM playlist_songs ps
+    INNER JOIN songs s ON s.id = ps.song_id
+    WHERE ps.playlist_id = ?
+  `);
+
+  for (const playlist of playlists) {
+    playlist.songs = getSongs.all(playlist.id);
+  }
+
+  return playlists;
 }
