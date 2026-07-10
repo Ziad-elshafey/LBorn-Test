@@ -11,6 +11,7 @@ export function getStatusCode(err) {
 
   switch (err.code) {
     case "SQLITE_CONSTRAINT_UNIQUE":
+    case "SQLITE_CONSTRAINT_PRIMARYKEY":
       return 409;
     case "SQLITE_CONSTRAINT_FOREIGNKEY":
     case "SQLITE_CONSTRAINT_CHECK":
@@ -45,6 +46,11 @@ function getClientMessage(err, statusCode) {
     )
   ) {
     return "Playlist name already exists for this user";
+  }
+
+  if (message.includes("UNIQUE constraint failed: playlist_songs") ||
+      message.includes("PRIMARY KEY constraint failed")) {
+    return "Song already in playlist";
   }
 
   return err.message;
