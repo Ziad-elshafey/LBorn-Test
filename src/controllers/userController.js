@@ -38,3 +38,14 @@ export function getUserPlaylists(req, res) {
     sendErrorResponse(res, err);
   }
 }
+
+export function deleteUser(req, res) {
+  try {
+    userService.deleteUser(req.params.userId);
+    res.status(200).json({
+      message: `user with id ${req.params.userId} deleted succesfully`,
+    });
+  } catch (err) {
+    sendErrorResponse(res, err);
+  }
+}

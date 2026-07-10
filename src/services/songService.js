@@ -24,3 +24,24 @@ export function deleteSong(id) {
   if (!deleted) throw httpError(404, "Song not found");
   return deleted;
 }
+
+export function updateSong(id, data) {
+  requireBody(data);
+  const songId = requirePositiveInt(id, "songId");
+  const title = requireNonEmptyString(data.title, "title");
+  const artist = requireNonEmptyString(data.artist, "artist");
+  const album = data.album || null;
+  const durationInSeconds = requirePositiveInt(
+    data.duration_in_seconds,
+    "duration_in_seconds",
+  );
+  const updated = songRepository.updateSong(
+    songId,
+    title,
+    artist,
+    album,
+    durationInSeconds,
+  );
+  if (!updated) throw httpError(404, "Song not found");
+  return updated;
+}

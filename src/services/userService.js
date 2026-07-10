@@ -31,3 +31,9 @@ export function getUserPlaylists(id) {
   if (!playlist) throw httpError(404, "User not found");
   return playlist;
 }
+
+export function deleteUser(id) {
+  const userId = requirePositiveInt(id, "userId");
+  const deleted = userRepository.deleteUser(userId);
+  if (!deleted) throw httpError(404, "User not found");
+}

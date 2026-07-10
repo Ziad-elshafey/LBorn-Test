@@ -1,4 +1,5 @@
 import * as playlistRepository from "../repositories/playlistRepository.js";
+import { httpError } from "../utils/httpErrors.js";
 import {
   requireBody,
   requireNonEmptyString,
@@ -23,4 +24,35 @@ export function getSongs(id) {
   const songs = playlistRepository.getSongs(playListId);
   if (!songs) throw httpError(404, "playlist not found");
   return songs;
+}
+
+export function deletePlaylist(id) {
+  const playlistId = requirePositiveInt(id, "id");
+  const playlist = playlistRepository.getPlaylist(playlistId);
+  if (!playlist) throw httpError(404, "playlist not found");
+  return playlistRepository.deletePlaylist(playlistId);
+}
+
+export function updatePlaylist(id, data) {
+  requireBody(data);
+  const playlistId = requirePositiveInt(id, "id");
+  const name =
+    data.name !== undefined ? requireNonEmptyString(data.name, "name") : null;
+  const description =
+    data.description !== undefined && typeof data.description === "string"
+      ? data.description || null
+      : null;
+  if (name === null && description === null) {
+    throw httpError(
+      400,
+      "At least one field (name, description) must be provided",
+    );
+  }
+  const updated = playlistRepository.updatePlaylist(
+    playlistId,
+    name,
+    description,
+  );
+  if (!updated) throw httpError(404, "playlist not found");
+  return updated;
 }

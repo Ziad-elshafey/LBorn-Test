@@ -30,3 +30,20 @@ export function getSongs(req, res) {
     sendErrorResponse(res, err);
   }
 }
+
+export function deletePlaylist(req, res) {
+  try {
+    playlistService.deletePlaylist(req.params.playlistId);
+    res.status(200).json({ message: "Playlist deleted successfully" });
+  } catch (err) {
+    sendErrorResponse(res, err);
+  }
+}
+export function updatePlaylist(req, res) {
+  try {
+    const playlist = playlistService.updatePlaylist(req.params.playlistId, req.body);
+    res.status(200).json({ message: "Playlist updated successfully" });
+  } catch (err) {
+    sendErrorResponse(res, err);
+  }
+}

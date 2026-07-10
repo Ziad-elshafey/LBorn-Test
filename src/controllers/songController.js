@@ -18,3 +18,12 @@ export function deleteSong(req, res) {
     sendErrorResponse(res, err);
   }
 }
+
+export function updateSong(req, res) {
+  try {
+    const song = songService.updateSong(req.params.songId, req.body);
+    res.status(200).json({ message: "Song updated successfully", song });
+  } catch (err) {
+    sendErrorResponse(res, err);
+  }
+}

@@ -41,3 +41,8 @@ export function getUserPlaylists(id) {
 
   return playlists;
 }
+
+export function deleteUser(id) {
+  const result = db.prepare(`DELETE FROM users WHERE id = ?`).run(id);
+  return result.changes > 0;
+}

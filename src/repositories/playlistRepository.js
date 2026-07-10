@@ -44,3 +44,24 @@ export function getSongs(playlistId) {
     .all(playlistId);
   return result;
 }
+
+export function deletePlaylist(playlistId) {
+  const result = db
+    .prepare(
+      `
+      DELETE FROM playlists WHERE id = ?
+      `,
+    )
+    .run(playlistId);
+  return result;
+}
+export function updatePlaylist(playlistId, name, description) {
+  const result = db
+    .prepare(
+      `
+      UPDATE playlists SET name = COALESCE(?, name), description = COALESCE(?, description) WHERE id = ?
+      `,
+    )
+    .run(name, description, playlistId);
+  return result.changes > 0;
+}

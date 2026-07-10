@@ -27,3 +27,14 @@ export function deleteSong(id) {
   const result = db.prepare(`DELETE FROM songs WHERE id = ?`).run(id);
   return result.changes > 0;
 }
+
+export function updateSong(id, title, artist, album, durationInSeconds) {
+  const result = db.prepare(`UPDATE songs SET title = ?, artist = ?, album = ?, duration_in_seconds = ? WHERE id = ?`).run(title, artist, album, durationInSeconds, id);
+  return {
+    id: result.lastInsertRowid,
+    title,
+    artist,
+    album,
+    duration_in_seconds: durationInSeconds,
+  };
+} 
