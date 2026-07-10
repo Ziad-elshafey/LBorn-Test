@@ -23,24 +23,24 @@ npm -v
 ### macOS
 
 1. Install Node.js from [nodejs.org](https://nodejs.org/) (LTS) or via Homebrew:
-
-   ```bash
+  ```bash
    brew install node
-   ```
-
+  ```
 2. If `npm install` fails while building `better-sqlite3`, install Xcode Command Line Tools:
-
-   ```bash
+  ```bash
    xcode-select --install
-   ```
-
+  ```
 3. Then continue with the shared steps below.
+
+
 
 ### Windows
 
 1. Install Node.js LTS from [nodejs.org](https://nodejs.org/). Prefer the installer that includes npm.
 2. If `npm install` fails while compiling `better-sqlite3`, install [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) and select the **Desktop development with C++** workload.
 3. Open a new terminal (PowerShell or Command Prompt) after installing build tools, then continue with the shared steps below.
+
+
 
 ### Install and run (macOS and Windows)
 
@@ -73,23 +73,31 @@ If `.env` is missing, the app still starts on port `3000`.
 npm run dev
 ```
 
+
+
 ### Important notes
 
 - `npm run setup` runs `init-db` then `seed`.
 - `npm run init-db` **deletes** any existing `database/luftborn.db` and recreates it. Re-running it wipes local data; run `npm run seed` again afterward if you need sample data.
 - You do **not** need to install or configure a separate database server. SQLite stores everything in a local file.
 
+
+
 ### Scripts
 
-| Command | Description |
-|---|---|
-| `npm start` | Start the server |
-| `npm run dev` | Start with auto-restart on file changes |
+
+| Command           | Description                                  |
+| ----------------- | -------------------------------------------- |
+| `npm start`       | Start the server                             |
+| `npm run dev`     | Start with auto-restart on file changes      |
 | `npm run init-db` | Create a fresh database and apply the schema |
-| `npm run seed` | Insert sample data into the database |
-| `npm run setup` | Run `init-db` and `seed` in sequence |
+| `npm run seed`    | Insert sample data into the database         |
+| `npm run setup`   | Run `init-db` and `seed` in sequence         |
+
 
 ---
+
+
 
 ## API Endpoints
 
@@ -102,7 +110,11 @@ After `npm run setup`, seed data includes user `id: 1`, playlist `id: 1`, and so
 
 ---
 
+
+
 ### Users
+
+
 
 #### `POST /users`
 
@@ -117,7 +129,7 @@ Create a user.
 }
 ```
 
-**Success — `201 Created`:**
+**Success —** `201 Created`**:**
 
 ```json
 {
@@ -132,11 +144,13 @@ Create a user.
 
 ---
 
+
+
 #### `GET /users`
 
 List all users. No request body.
 
-**Success — `200 OK`:**
+**Success —** `200 OK`**:**
 
 ```json
 {
@@ -155,13 +169,15 @@ List all users. No request body.
 
 ---
 
+
+
 #### `GET /users/:userId`
 
 Get a single user by ID. No request body.
 
 **Example:** `GET /users/1`
 
-**Success — `200 OK`:**
+**Success —** `200 OK`**:**
 
 ```json
 {
@@ -178,13 +194,15 @@ Get a single user by ID. No request body.
 
 ---
 
+
+
 #### `GET /users/:userId/playlists`
 
 Get a user’s playlists with nested songs. No request body.
 
 **Example:** `GET /users/1/playlists`
 
-**Success — `200 OK`:**
+**Success —** `200 OK`**:**
 
 ```json
 {
@@ -206,9 +224,35 @@ Get a user’s playlists with nested songs. No request body.
 }
 ```
 
+**Error —** `404 Not Found` if the user does not exist.
+
 ---
 
+
+
+#### `DELETE /users/:userId`
+
+Delete a user by ID. No request body. Deleting a user also deletes their playlists and playlist-song links (`ON DELETE CASCADE`).
+
+**Example:** `DELETE /users/1`
+
+**Success —** `200 OK`**:**
+
+```json
+{
+  "message": "User with id 1 deleted successfully"
+}
+```
+
+**Error —** `404 Not Found` if the user does not exist.
+
+---
+
+
+
 ### Playlists
+
+
 
 #### `POST /playlists`
 
@@ -226,7 +270,7 @@ Create a playlist for an existing user.
 
 `description` is optional.
 
-**Success — `201 Created`:**
+**Success —** `201 Created`**:**
 
 ```json
 {
@@ -242,6 +286,8 @@ Create a playlist for an existing user.
 
 ---
 
+
+
 #### `POST /playlists/:playlistId/songs`
 
 Add an existing song to a playlist.
@@ -256,11 +302,11 @@ Add an existing song to a playlist.
 }
 ```
 
-**Success — `201 Created`:**
+**Success —** `201 Created`**:**
 
 ```json
 {
-  "message": "Song added successfuly!",
+  "message": "Song added successfully!",
   "song": {
     "playlistId": 1,
     "songId": 1
@@ -268,7 +314,11 @@ Add an existing song to a playlist.
 }
 ```
 
+**Error —** `409 Conflict` if the song is already in the playlist.
+
 ---
+
+
 
 #### `GET /playlists/:playlistId/songs`
 
@@ -276,7 +326,7 @@ List songs in a playlist. No request body.
 
 **Example:** `GET /playlists/1/songs`
 
-**Success — `200 OK`:**
+**Success —** `200 OK`**:**
 
 ```json
 {
@@ -287,17 +337,80 @@ List songs in a playlist. No request body.
       "title": "Heseeny",
       "artist": "TUL8TE",
       "album": "Narein",
-      "duration_in_seconds": 214,
-      "created_at": "2026-07-10 00:00:00",
-      "updated_at": "2026-07-10 00:00:00"
+      "duration_in_seconds": 214
     }
   ]
 }
 ```
 
+**Error —** `404 Not Found` if the playlist does not exist.
+
 ---
 
+
+
+#### `PATCH /playlists/:playlistId`
+
+Update a playlist’s name and/or description. At least one field is required.
+
+**Example:** `PATCH /playlists/1`
+
+**Request body:**
+
+```json
+{
+  "name": "updated playlist name",
+  "description": "updated description"
+}
+```
+
+Both fields are optional, but at least one must be provided. Pass `"description": null` (or `""`) to clear the description.
+
+**Success —** `200 OK`**:**
+
+```json
+{
+  "message": "Playlist updated successfully",
+  "playlist": {
+    "id": 1,
+    "user_id": 1,
+    "name": "updated playlist name",
+    "description": "updated description",
+    "created_at": "2026-07-10 00:00:00",
+    "updated_at": "2026-07-10 00:00:00"
+  }
+}
+```
+
+**Error —** `404 Not Found` if the playlist does not exist.
+
+---
+
+
+
+#### `DELETE /playlists/:playlistId`
+
+Delete a playlist by ID. No request body. Playlist-song links are removed via `ON DELETE CASCADE`.
+
+**Example:** `DELETE /playlists/1`
+
+**Success —** `200 OK`**:**
+
+```json
+{
+  "message": "Playlist deleted successfully"
+}
+```
+
+**Error —** `404 Not Found` if the playlist does not exist.
+
+---
+
+
+
 ### Songs
+
+
 
 #### `POST /songs`
 
@@ -316,7 +429,7 @@ Create a song.
 
 `album` is optional. `duration_in_seconds` must be a positive integer.
 
-**Success — `201 Created`:**
+**Success —** `201 Created`**:**
 
 ```json
 {
@@ -333,13 +446,53 @@ Create a song.
 
 ---
 
+
+
+#### `PATCH /songs/:songId`
+
+Update a song. All of `title`, `artist`, and `duration_in_seconds` are required; `album` is optional.
+
+**Example:** `PATCH /songs/1`
+
+**Request body:**
+
+```json
+{
+  "title": "Heseeny (Remix)",
+  "artist": "TUL8TE",
+  "album": "Narein",
+  "duration_in_seconds": 220
+}
+```
+
+**Success —** `200 OK`**:**
+
+```json
+{
+  "message": "Song updated successfully",
+  "song": {
+    "id": 1,
+    "title": "Heseeny (Remix)",
+    "artist": "TUL8TE",
+    "album": "Narein",
+    "duration_in_seconds": 220
+  }
+}
+```
+
+**Error —** `404 Not Found` if the song does not exist.
+
+---
+
+
+
 #### `DELETE /songs/:songId`
 
 Delete a song by ID. No request body. Removing a song also removes it from all playlists (`ON DELETE CASCADE`).
 
 **Example:** `DELETE /songs/1`
 
-**Success — `200 OK`:**
+**Success —** `200 OK`**:**
 
 ```json
 {
@@ -347,23 +500,35 @@ Delete a song by ID. No request body. Removing a song also removes it from all p
 }
 ```
 
+**Error —** `404 Not Found` if the song does not exist.
+
 ---
+
+
 
 ### Endpoint summary
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/users` | Create a user |
-| `GET` | `/users` | List all users |
-| `GET` | `/users/:userId` | Get a single user |
-| `GET` | `/users/:userId/playlists` | Get a user’s playlists with nested songs |
-| `POST` | `/playlists` | Create a playlist |
-| `POST` | `/playlists/:playlistId/songs` | Add a song to a playlist |
-| `GET` | `/playlists/:playlistId/songs` | List songs in a playlist |
-| `POST` | `/songs` | Create a song |
-| `DELETE` | `/songs/:songId` | Delete a song |
+
+| Method   | Endpoint                       | Description                              |
+| -------- | ------------------------------ | ---------------------------------------- |
+| `POST`   | `/users`                       | Create a user                            |
+| `GET`    | `/users`                       | List all users                           |
+| `GET`    | `/users/:userId`               | Get a single user                        |
+| `GET`    | `/users/:userId/playlists`     | Get a user’s playlists with nested songs |
+| `DELETE` | `/users/:userId`               | Delete a user                            |
+| `POST`   | `/playlists`                   | Create a playlist                        |
+| `POST`   | `/playlists/:playlistId/songs` | Add a song to a playlist                 |
+| `GET`    | `/playlists/:playlistId/songs` | List songs in a playlist                 |
+| `PATCH`  | `/playlists/:playlistId`       | Update a playlist                        |
+| `DELETE` | `/playlists/:playlistId`       | Delete a playlist                        |
+| `POST`   | `/songs`                       | Create a song                            |
+| `PATCH`  | `/songs/:songId`               | Update a song                            |
+| `DELETE` | `/songs/:songId`               | Delete a song                            |
+
 
 ---
+
+
 
 ## Database Schema
 
@@ -403,6 +568,8 @@ erDiagram
     }
 ```
 
+
+
 **Relationships and constraints:**
 
 - A **user** owns many **playlists** (`playlists.user_id` → `users.id`).
@@ -415,6 +582,8 @@ erDiagram
 
 ---
 
+
+
 ## Why SQLite?
 
 A relational database fits this domain because the components are related to each other: users have playlists, and playlists contain songs.
@@ -423,6 +592,8 @@ SQLite was chosen to make local testing easy without running a separate database
 
 ---
 
+
+
 ## AI Usage
 
 An OpenCode agent was used to:
@@ -430,8 +601,11 @@ An OpenCode agent was used to:
 1. Suggest the project file skeleton
 2. Generate DB initialization scripts
 3. Input validation and error handler utilities
+4. generating the readme file
 
 ---
+
+
 
 ## Project Structure
 
@@ -459,3 +633,4 @@ An OpenCode agent was used to:
 │       └── validate.js
 └── package.json
 ```
+
