@@ -42,7 +42,7 @@ export function deletePlaylist(req, res) {
 export function updatePlaylist(req, res) {
   try {
     const playlist = playlistService.updatePlaylist(req.params.playlistId, req.body);
-    res.status(200).json({ message: "Playlist updated successfully" });
+    res.status(200).json({ message: "Playlist updated successfully", playlist });
   } catch (err) {
     sendErrorResponse(res, err);
   }

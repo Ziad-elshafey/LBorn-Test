@@ -21,8 +21,9 @@ export function addSong(data, playlistId) {
 }
 export function getSongs(id) {
   const playListId = requirePositiveInt(id, "id");
+  const playlist = playlistRepository.getPlaylist(playListId);
+  if (!playlist) throw httpError(404, "playlist not found");
   const songs = playlistRepository.getSongs(playListId);
-  if (!songs) throw httpError(404, "playlist not found");
   return songs;
 }
 
@@ -38,11 +39,12 @@ export function updatePlaylist(id, data) {
   const playlistId = requirePositiveInt(id, "id");
   const name =
     data.name !== undefined ? requireNonEmptyString(data.name, "name") : null;
-  const description =
-    data.description !== undefined && typeof data.description === "string"
-      ? data.description || null
-      : null;
-  if (name === null && description === null) {
+  const hasDescription = data.description !== undefined;
+  const description = hasDescription ? data.description || null : null;
+  if (hasDescription && data.description !== null && typeof data.description !== "string") {
+    throw httpError(400, "description must be a string");
+  }
+  if (name === null && !hasDescription) {
     throw httpError(
       400,
       "At least one field (name, description) must be provided",

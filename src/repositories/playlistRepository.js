@@ -34,11 +34,15 @@ export function addSong(songId, playlistId) {
   };
 }
 
+export function getPlaylist(playlistId) {
+  return db.prepare(`SELECT * FROM playlists WHERE id = ?`).get(playlistId);
+}
+
 export function getSongs(playlistId) {
   const result = db
     .prepare(
       `
-      SELECT song_id, s.title, s.artist, s.album, s.duration_in_seconds FROM playlist_songs ps JOIN songs s ON ps.song_id = s.id WHERE ps.playlist_id = ?
+      SELECT s.id, s.title, s.artist, s.album, s.duration_in_seconds FROM playlist_songs ps JOIN songs s ON ps.song_id = s.id WHERE ps.playlist_id = ?
       `,
     )
     .all(playlistId);
@@ -56,12 +60,12 @@ export function deletePlaylist(playlistId) {
   return result;
 }
 export function updatePlaylist(playlistId, name, description) {
-  const result = db
+  db
     .prepare(
       `
       UPDATE playlists SET name = COALESCE(?, name), description = COALESCE(?, description) WHERE id = ?
       `,
     )
     .run(name, description, playlistId);
-  return result.changes > 0;
+  return getPlaylist(playlistId);
 }
