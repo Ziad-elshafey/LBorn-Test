@@ -33,3 +33,14 @@ export function addSong(songId, playlistId) {
     songId,
   };
 }
+
+export function getSongs(playlistId) {
+  const result = db
+    .prepare(
+      `
+      SELECT song_id, s.title, s.artist, s.album, s.duration_in_seconds FROM playlist_songs ps JOIN songs s ON ps.song_id = s.id WHERE ps.playlist_id = ?
+      `,
+    )
+    .all(playlistId);
+  return result;
+}
