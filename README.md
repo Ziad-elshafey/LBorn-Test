@@ -602,7 +602,7 @@ An OpenCode agent was used to:
 2. Generate DB initialization scripts
 3. Input validation and error handler utilities
 4. generating the readme file
-
+5. smoke test the api against different inputs
 ---
 
 
